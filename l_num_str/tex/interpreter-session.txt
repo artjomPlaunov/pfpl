@@ -1,0 +1,30 @@
+Example interpreter session:
+
+- TopLevel.repl();
+->step checked 5+8;
+ --> 13()
+
+->step unchecked 5+8;
+Statics : exp has type : num()
+ --> 13()
+
+->step checked let val x = "t" in x ^ "p" end;
+ --> cat("t"(), "p"())
+
+->step;
+ --> "tp"()
+
+->eval checked len("abc");
+ 3() VAL
+
+->step checked 5 + 6 + 7 + 8;
+ --> plus(plus(11(), 7()), 8())
+
+->eval;
+ 26() VAL
+
+->step checked 5 + "six";
+ ERR
+
+->step unchecked 5 + "six";
+TypeChecker error!

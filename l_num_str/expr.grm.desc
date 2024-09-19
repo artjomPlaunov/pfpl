@@ -1,0 +1,534 @@
+
+state 0:
+
+	start : . step 
+	start : . eval 
+
+	STEP	shift 4
+	EVAL	shift 3
+
+	start	goto 40
+	eval	goto 2
+	step	goto 1
+
+	.	error
+
+
+state 1:
+
+	start : step .  (reduce by rule 0)
+
+
+
+	.	reduce by rule 0
+
+
+state 2:
+
+	start : eval .  (reduce by rule 1)
+
+
+
+	.	reduce by rule 1
+
+
+state 3:
+
+	eval : EVAL . mode exp 
+	eval : EVAL .  (reduce by rule 5)
+
+	CHECKED	shift 7
+	UNCHECKED	shift 6
+
+	mode	goto 5
+
+	.	reduce by rule 5
+
+
+state 4:
+
+	step : STEP . mode exp 
+	step : STEP .  (reduce by rule 3)
+
+	CHECKED	shift 7
+	UNCHECKED	shift 6
+
+	mode	goto 8
+
+	.	reduce by rule 3
+
+
+state 5:
+
+	eval : EVAL mode . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 12
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 6:
+
+	mode : UNCHECKED .  (reduce by rule 7)
+
+
+
+	.	reduce by rule 7
+
+
+state 7:
+
+	mode : CHECKED .  (reduce by rule 6)
+
+
+
+	.	reduce by rule 6
+
+
+state 8:
+
+	step : STEP mode . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 19
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 9:
+
+	letexp : letstart . let1 letend 
+
+	VAL	shift 22
+
+	let1	goto 21
+	let2	goto 20
+
+	.	error
+
+
+state 10:
+
+	exp : letexp .  (reduce by rule 15)
+
+
+
+	.	reduce by rule 15
+
+
+state 11:
+
+	exp : var .  (reduce by rule 14)
+
+
+
+	.	reduce by rule 14
+
+
+state 12:
+
+	eval : EVAL mode exp .  (reduce by rule 4)
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+
+	PLUS	shift 25
+	TIMES	shift 24
+	CARET	shift 23
+
+
+	.	reduce by rule 4
+
+
+state 13:
+
+	letstart : LET .  (reduce by rule 18)
+
+
+
+	.	reduce by rule 18
+
+
+state 14:
+
+	exp : LEN . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 26
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 15:
+
+	exp : STR .  (reduce by rule 13)
+
+
+
+	.	reduce by rule 13
+
+
+state 16:
+
+	exp : NUM .  (reduce by rule 12)
+
+
+
+	.	reduce by rule 12
+
+
+state 17:
+
+	exp : LPAREN . exp RPAREN 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 27
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 18:
+
+	var : IDENT .  (reduce by rule 23)
+
+
+
+	.	reduce by rule 23
+
+
+state 19:
+
+	step : STEP mode exp .  (reduce by rule 2)
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+
+	PLUS	shift 25
+	TIMES	shift 24
+	CARET	shift 23
+
+
+	.	reduce by rule 2
+
+
+state 20:
+
+	let1 : let2 . let1 
+	let1 : let2 . IN exp 
+
+	VAL	shift 22
+	IN	shift 29
+
+	let1	goto 28
+	let2	goto 20
+
+	.	error
+
+
+state 21:
+
+	letexp : letstart let1 . letend 
+
+	END	shift 31
+
+	letend	goto 30
+
+	.	error
+
+
+state 22:
+
+	let2 : VAL . IDENT EQUALS exp 
+
+	IDENT	shift 32
+
+
+	.	error
+
+
+state 23:
+
+	exp : exp CARET . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 33
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 24:
+
+	exp : exp TIMES . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 34
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 25:
+
+	exp : exp PLUS . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 35
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 26:
+
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+	exp : LEN exp .  (reduce by rule 11)
+
+
+
+	.	reduce by rule 11
+
+
+state 27:
+
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+	exp : LPAREN exp . RPAREN 
+
+	RPAREN	shift 36
+	PLUS	shift 25
+	TIMES	shift 24
+	CARET	shift 23
+
+
+	.	error
+
+
+state 28:
+
+	let1 : let2 let1 .  (reduce by rule 19)
+
+
+
+	.	reduce by rule 19
+
+
+state 29:
+
+	let1 : let2 IN . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 37
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 30:
+
+	letexp : letstart let1 letend .  (reduce by rule 17)
+
+
+
+	.	reduce by rule 17
+
+
+state 31:
+
+	letend : END .  (reduce by rule 22)
+
+
+
+	.	reduce by rule 22
+
+
+state 32:
+
+	let2 : VAL IDENT . EQUALS exp 
+
+	EQUALS	shift 38
+
+
+	.	error
+
+
+state 33:
+
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+	exp : exp CARET exp .  (reduce by rule 10)
+
+	PLUS	shift 25
+	TIMES	shift 24
+
+
+	.	reduce by rule 10
+
+
+state 34:
+
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp TIMES exp .  (reduce by rule 9)
+	exp : exp . CARET exp 
+
+
+
+	.	reduce by rule 9
+
+
+state 35:
+
+	exp : exp . PLUS exp 
+	exp : exp PLUS exp .  (reduce by rule 8)
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+
+	TIMES	shift 24
+
+
+	.	reduce by rule 8
+
+
+state 36:
+
+	exp : LPAREN exp RPAREN .  (reduce by rule 16)
+
+
+
+	.	reduce by rule 16
+
+
+state 37:
+
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+	let1 : let2 IN exp .  (reduce by rule 20)
+
+	PLUS	shift 25
+	TIMES	shift 24
+	CARET	shift 23
+
+
+	.	reduce by rule 20
+
+
+state 38:
+
+	let2 : VAL IDENT EQUALS . exp 
+
+	IDENT	shift 18
+	LPAREN	shift 17
+	NUM	shift 16
+	STR	shift 15
+	LEN	shift 14
+	LET	shift 13
+
+	exp	goto 39
+	var	goto 11
+	letexp	goto 10
+	letstart	goto 9
+
+	.	error
+
+
+state 39:
+
+	exp : exp . PLUS exp 
+	exp : exp . TIMES exp 
+	exp : exp . CARET exp 
+	let2 : VAL IDENT EQUALS exp .  (reduce by rule 21)
+
+	PLUS	shift 25
+	TIMES	shift 24
+	CARET	shift 23
+
+
+	.	reduce by rule 21
+
+
+state 40:
+
+
+	EOF	accept
+	SEMI	accept
+
+
+	.	error
+
+39 of 128 action table entries left after compaction
+46 goto table entries

@@ -1,0 +1,59 @@
+Group is
+   $/basis.cm
+   $/smlnj-lib.cm
+   $/ml-yacc-lib.cm
+
+   var.sig
+   var.sml
+
+   oper.sig
+   abt.sig
+   list-util.sml
+   abt.sml
+   abt-util.sig
+   abt-util.sml
+
+   typeops.sml
+   type.sml
+   termops.sml
+   term.sml
+
+   context.sml
+
+   typechecker.sig
+   typechecker.sml
+   dynamics.sig
+   uncheckeddynamics.sml
+   checkeddynamics.sml
+
+   stream.sml
+   input.sml
+   toplevel-cmds.sml
+
+   symboltable.sml
+   parserstate.sml
+   expr.lex
+   expr.grm
+   parse.sml
+
+   toplevel.sig
+   toplevel.sml
+
+   tests.sig
+   tests.sml
+
+   ArraySequence.sml
+   BSTREE.sig
+   ELEMENT.sig
+   KEY.sig
+   MkBSTTable.sml
+   MkTreap.sml
+   MkTreapTable.sml
+   PRIMITIVES.sig
+   Primitives.sml
+   RANDOM210.sig
+   Random210.sml
+   SET.sig
+   SEQUENCE.sig
+   StringElt.sml
+   TABLE.sig

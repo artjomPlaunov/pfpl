@@ -1,0 +1,75 @@
+structure T = Term
+structure TY = Type
+structure TLC = TopLevelCommands
+exception Parse of string
+
+fun createlet (e1,var) e2 =  T.$$(TermOps.Let, [e1, T.\\(var, e2)])
+
+%%
+(* %header (functor LangLrValsFn (structure Token : TOKEN)) *)
+
+
+%term EOF | IDENT of string | LPAREN | RPAREN | NUM of int | STR of string | PLUS | TIMES | CARET | LEN | COLON | SEMI | EQUALS | NUMTYPE | STRTYPE |
+ LET | VAL | IN | END | STEP | EVAL | CHECKED | UNCHECKED
+
+%nonterm start of TLC.cmd | eval of TLC.cmd | step of TLC.cmd |
+         mode of TLC.dynMode | exp of T.t | var of T.t |
+         letexp of T.t | letstart of unit | let1 of T.t | let2 of T.t * Var.t | letend of unit
+
+%verbose
+%pos int
+%start start
+%eop EOF SEMI
+%noshift EOF SEMI
+%name Exp
+%left CARET
+%left PLUS
+%left TIMES
+%right LEN
+
+%%
+
+start : step                   (step)
+      | eval                   (eval)
+
+step  : STEP mode exp          (TLC.Step(SOME(mode, exp)))
+      | STEP                   (TLC.Step(NONE))
+
+eval  : EVAL mode exp          (TLC.Eval(SOME(mode, exp)))
+      | EVAL                   (TLC.Eval(NONE))
+
+mode  : CHECKED                (TLC.Checked)
+      | UNCHECKED              (TLC.Unchecked)
+
+(*type  : num                    (TY.num)
+      | str                    (TY.str)*)
+
+exp   : exp PLUS exp            (T.$$(TermOps.Plus, [exp1,exp2]))
+      | exp TIMES exp           (T.$$(TermOps.Times, [exp1,exp2]))
+      | exp CARET exp           (T.$$(TermOps.Cat, [exp1,exp2]))
+	  | LEN exp                 (T.$$(TermOps.Len, [exp]))
+      | NUM                     (T.$$(TermOps.Num(NUM),[]))
+      | STR                     (T.$$(TermOps.Str(STR),[]))
+      | var                     (var)
+      | letexp                  (letexp)
+      | LPAREN exp RPAREN       (exp)
+
+letexp : letstart let1
+         letend                 (let1)
+
+letstart : LET                  (ParserState.savetable())
+
+let1 :  let2 let1               ( createlet let2 let1 )
+      | let2 IN exp             ( createlet let2 exp )
+
+let2 : VAL IDENT EQUALS exp     (
+                                  let
+                                    val var = ParserState.addvar IDENT
+                                  in
+                                    (exp,var)
+                                  end
+                                )
+
+letend : END                    ( ParserState.restoretable() )
+
+var :  IDENT                    (T.`` (ParserState.getvar IDENT))

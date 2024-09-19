@@ -1,0 +1,31 @@
+command ::=
+  step checked <exp>;
+| step unchecked <exp>;
+| step;
+| eval checked <exp>;
+| eval;
+
+(* Whitespace is required even for +, *, and ^.
+ * Infix operators associate left.
+ * The precedence order is ^, +, *, len (so len binds tightest).
+ *)
+exp ::=
+  <exp> + <exp>
+| <exp> * <exp>
+| <exp> ^ <exp>
+| len <exp>
+| <number>
+| <string>
+| <ident>
+| let <decls> in <exp> end (* whitespace is required *)
+| (<exp>)
+
+decls ::=
+  <decl>
+| <decl> <decls>
+
+decl ::= val <ident> = <exp>
+
+number ::= (* one or more digits from 0 to 9 *)
+string ::= (* letters, digits, spaces, and tabs enclosed in quotes (no newlines) *)
+ident ::= (* a letter followed by any number of letters and numbers *)
