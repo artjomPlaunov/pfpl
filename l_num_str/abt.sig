@@ -12,6 +12,7 @@ sig
    | $ of Operator.t * 'a list
 
    exception Malformed
+   exception Malformed_S of string
 
    val into : t view -> t
    val out : t -> t view

@@ -19,6 +19,7 @@ struct
   | OPER of Operator.t * t list
 
   exception Malformed
+  exception Malformed_S of string
   exception NotImplemented
 
   fun map f y   = case y of 
@@ -36,39 +37,32 @@ struct
       f 0 e
     end
 
-  fun unbind t = case t of
-    `_        => raise Malformed
-  | $_        => raise Malformed
-  | \(x, e)   => 
-    let val fresh_x : Var.t = Var.newvar (Var.toString x) 
-    in 
-      let fun f d e = case e of 
-                        FV y => FV y
-                      | BV d_ => (
-                          case Int.compare (d, d_) of
-                            GREATER => BV d_
-                          | EQUAL   => FV fresh_x
-                          | LESS    => BV (d_ - 1)
-                      )
-
-                      | ABS e => f (d+1) e 
-                      | OPER (oper,es) => OPER (oper, (List.map (f d) es))
-      in
-        (fresh_x, (f 0 e)) 
-      end 
-    end 
+  fun unbind fv = 
+    let fun f i e = 
+      case e of 
+        FV v => FV v
+      | BV j => (case Int.compare (i,j) of 
+                  GREATER => BV j
+                | EQUAL => FV fv
+                | LESS => BV (j - 1)
+                )
+      | ABS t => ABS (f (i+1) t)
+      | OPER (oper, es) => OPER (oper, List.map (f i) es)
+    in f 0 end 
 
   (*val foldr : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b*)
 
   fun arity t = case t of 
     ABS t         => 1 + (arity t)
-  | OPER (_, es)  => List.foldl op+ 0 (List.map arity es)
   | _             => 0
 
   fun out x = case x of 
     FV y      => ` y
-  | BV _      => raise Malformed
-  | ABS t     => \ (unbind (out t))
+  | BV _      => raise Malformed_S "out BV _"
+  | ABS t     => 
+    let val fresh_x : Var.t = (Var.newvar "x") in
+      \ (fresh_x, (unbind fresh_x) t)
+    end
   | OPER (oper, es) => $ (oper, es)
 
   fun into x  = case x of 
@@ -77,9 +71,9 @@ struct
   | $(f, es)  => 
       if O.arity f = List.map arity es
       then 
-        raise NotImplemented
+        OPER (f, es)
       else 
-        raise Malformed
+        raise Malformed_S "into"
 
   fun aequiv x = case x of 
     (FV x1, FV x2)    => if Var.equal (x1, x2) then true else false

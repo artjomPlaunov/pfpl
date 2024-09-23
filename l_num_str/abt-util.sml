@@ -36,5 +36,15 @@ struct
                   then \\(v,t) else \\(v, subst e1 x t)
   | $(oper, es) => $$(oper, List.map (subst e1 x) es)
    
-  fun toString e     = raise NotImplemented 
+
+  fun toString e     = 
+    let fun f e = case out e of 
+      `v => (Variable.toString v)
+    | \(v, t) =>  (Variable.toString v) ^ " " ^ (f t)
+    | $(oper, es) =>  (Operator.toString oper) ^ " " ^ 
+                      (String.concat (List.map f es))
+
+    in 
+      f e
+    end 
 end

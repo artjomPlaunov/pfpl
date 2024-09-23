@@ -27,7 +27,7 @@ fun uncheckedStep term =
 
 fun checkType term =
     let
-        val tau = T.checktype (Context.empty ()) term
+        val tau = T.checktype (Context.empty) term
         val _ = TextIO.print ("Statics : exp has type : " ^ (Type.toString tau) ^ "\n");
     in
       tau
@@ -113,7 +113,8 @@ fun hdl f x y = (f x y)
 	   | T.TypeError => ((TextIO.print "TypeChecker error!\n") ; y)
 	   | CD.RuntimeError => ((TextIO.print "Could not evaluate!\n") ; y)
 	   | CD.Malformed => ((TextIO.print "Something went seriously wrong in CheckedDynamics!\n") ; y)
-	   | UD.Malformed => ((TextIO.print "Something went seriously wrong in UncheckedDynamics!\n") ; y)
+	   | CD.Malformed_S s => ((TextIO.print ("Something went seriously wrong in CheckedDynamics! " ^ s ^ "\n")) ; y)
+     | UD.Malformed => ((TextIO.print "Something went seriously wrong in UncheckedDynamics!\n") ; y)
 	   | NothingToDo => ((TextIO.print "Nothing to do!\n") ; y)
        | exn => ((TextIO.print ("Unexpected error: "^exnName exn^"["^exnMessage exn^"]\n")); y)
 

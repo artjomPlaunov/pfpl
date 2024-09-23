@@ -6,6 +6,7 @@ sig
   val view : d -> D
 
   exception Malformed
+  exception Malformed_S of string
 
   val trystep : Term.t -> d
   
